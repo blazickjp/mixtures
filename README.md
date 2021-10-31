@@ -11,7 +11,9 @@ gmm.data_gen(1000)
 gmm.plot_data(alpha = .5, bins = 50)
 ```
 
-![](mixture4.png)
+<p align="center">
+  <img src="mixture4.png" width="350" title="hover text">
+</p>
 
 ```python
 gmm.gibbs(iters=500)
