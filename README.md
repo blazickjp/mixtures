@@ -12,7 +12,7 @@ gmm.plot_data(alpha = .5, bins = 50)
 ```
 
 <p align="center">
-  <img src="mixture4.png" width="500" height="500" title="hover text">
+  <img src="mixture4.png" width="400" height="300" title="hover text">
 </p>
 
 ```python
