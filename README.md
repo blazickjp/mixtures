@@ -11,7 +11,7 @@ gmm.data_gen(1000)
 gmm.plot_data(alpha = .5, bins = 50)
 ```
 
-![](mixture4.svg)
+![](mixture4.png)
 
 ```python
 gmm.gibbs(iters=500)
