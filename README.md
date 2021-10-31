@@ -1,4 +1,4 @@
-# mixtures
+# Mixtures
 
 A python package for working with Gaussian Mixture Models. You can either generate your own data and fit models to help understand how the models work, or you can work directly with another non-synthetic data source.
 # Install
