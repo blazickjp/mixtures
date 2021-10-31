@@ -9,7 +9,7 @@ import matplotlib.colors as mcolors
 import matplotlib.pyplot as plt
 
 from numpy.random import multinomial, normal
-from scipy.stats import invgamma, norm, multivariate_normal, dirichlet, multivariate_t
+from scipy.stats import norm, multivariate_normal, dirichlet, multivariate_t
 from distcan import InverseGamma
 from matplotlib.lines import Line2D
 
@@ -287,6 +287,107 @@ class FiniteGMM:
             plt.legend(handles=legend_elements, loc="upper right")
             plt.grid()
             plt.show()
+class InfiniteGMM(FiniteGMM):
+    def __init__(self, k = None, mu = None, sigma = None, phi = None):
+        super().__init__()
+        self.k = k
+        self.mu = mu
+        self.sigma = sigma
+        self.phi = phi
+        self.multivariate = np.array(self.sigma).ndim >= 2
+        self.data = np.NaN
+        self.results = None
+        self.fitted_params = None
+    
+    def gibbs(self, initial_k, iters = 10, a = 1, v = 10):
+        return self.collapsed_gibbs(initial_k, a, v, iters)
+    
+    def collapsed_gibbs(self, initial_k, a, v, iters):
+        N = self.data.shape[0]
+        try:
+            D = self.data.shape[1]
+        except:
+            D = 1
+        
+        assert v > D-1, "v must be strictly greater than D-1"
+        alpha = np.repeat(a, initial_k)
+        z = np.random.choice(initial_k, size = N, replace = True, p =dirichlet(alpha / initial_k).rvs().squeeze())
+        df = pd.DataFrame({"k": z, "p_z": np.nan})
+        g_not = []
+        for _ in range(iters):
+            for i in range(N):
+                groups = list(np.unique(z))
+                # Remove x_i from data and Z
+                d2 = np.delete(self.data, i, axis=0)
+                z2 = np.delete(z, i, axis=0)
+                p_z = []
+                g = []
+                for k in groups:
+                    if np.sum([z2 == k]) == 0:
+                        g_not.append(k)
+                        # This is the last group so just move on
+                        continue
+                    
+                    mu_k = np.mean(d2[z2 == k], axis=0)
+                    n_k = np.sum(z2 == k)
+                    p_z_k = (n_k + a/max(groups)) / (N + a - 1)
+                    S_k = np.dot(np.transpose(d2[z2 == k] - mu_k), d2[z2 == k] - mu_k) + np.eye(D)
+                    p_x_i = multivariate_t(mu_k, ((n_k+1) / (n_k *(n_k + v - D + 1)))*S_k, n_k+v - D + 1).pdf(self.data[i,])
+                    p_z_k = p_z_k * p_x_i
+                    g.append(k)
+                    p_z.append(p_z_k)
+                
+                # Now consider new component
+                p_z_k = (a / len(groups)) / (N + (a/len(groups)) - 1)
+                try:
+                    p_x_i = multivariate_t([0 for _ in len(mu_k)], np.eye(D), v - D + 1).pdf(self.data[i,])
+                except:
+                    p_x_i = multivariate_t(0, 1, v - D + 1).pdf(self.data[i,])
+
+
+                p_z_k = p_z_k * p_x_i
+                g.append(k+1)
+                p_z.append(p_z_k)
+                # Standardize prob vector p(z_i = k)
+                p_z = p_z / np.sum(p_z)
+                z[i] = np.random.choice(g, 1, replace=True, p = p_z)
+            df = pd.DataFrame({
+                'z': z,
+            }).groupby(['z']).size().reset_index(name='counts')
+            # Rename clusters to reindex to zero
+            # z and z_new are the same thing, but z_new has cluster names from 0 - K
+            # where z has cluster names > K. This can be a problem when using the cluster
+            # name to subset a list of colors (which is why we rename them)
+            lookup = df.to_dict()['z']
+            lookup = dict((v,k) for k, v in lookup.items()) 
+            z = np.array([lookup.get(i) for i in z])
+        
+        self.results = z
+        self.fitted_params = self.__get_params()
+
+        return 
+
+    def __get_params(self):
+        mu = []
+        sigma = []
+        phi = []
+
+        for i in np.unique(self.results):
+            data = self.data[self.results == i]
+            mu.append(data.mean(axis=0))
+            if self.multivariate:
+                sigma.append(np.cov(data, rowvar=False))
+            else:
+                sigma.append(np.sqrt(np.cov(data, rowvar=False)))
+
+            phi.append(data.shape[0] / self.data.shape[0])
+
+        params = {
+            "mu": mu,
+            "sigma": sigma,
+            "phi": phi
+        }
+        return params
 
 if __name__ == '__main__':
     pass

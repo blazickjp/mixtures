@@ -1,6 +1,6 @@
 # mixtures
 
-A python package for working with Gaussian Mixture Models. You can either generate your own data and fit models to help understand how the package works, or you can work directly with another data source.
+A python package for working with Gaussian Mixture Models. You can either generate your own data and fit models to help understand how the models work, or you can work directly with another non-synthetic data source.
 # Install
 
 ```
@@ -10,6 +10,7 @@ pip install .
 ```
 
 # Examples
+## Finite Gaussian Mixture Models
 
 Define a mixture model and generate sample data according to the model. We can then fit a mixture model to the data and compare our fitted model to actuals.
 
@@ -67,4 +68,19 @@ gmm.plot_results(alpha = .5)
 ```
 <p align="center">
   <img src="images/m_variate_fitted.png" width="400" height="300" title="hover text">
+</p>
+
+## Infinite Gaussian Mixture Models
+
+The API for working with Infitine Mixture Models is exactly the same except we call ```InfitineGMM``` instead of ```FiniteGMM```. The Infinite GMM model will fit both multivariate and univarite data. The ```InfiniteGMM``` class inherits from the ```FiniteGMM``` class so you get the sample plotting features as in the finite class.
+
+```python
+gmm = mixtures.InfiniteGMM(4, [0,4,8,16], [1,1,2,3], [.2,.2,.2,.4])
+gmm.data_gen(1000)
+gmm.gibbs(initial_k=3,iters=50)
+gmm.plot_results()
+```
+
+<p align="center">
+  <img src="images/infinitegmm.png" width="400" height="300" title="hover text">
 </p>
