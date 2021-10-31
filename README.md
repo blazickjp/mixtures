@@ -1,5 +1,12 @@
 # mixtures
 
+# Install
+
+```
+git clone https://github.com/blazickjp/mixtures.git
+cd mixtures
+pip install .
+```
 
 # Examples
 
