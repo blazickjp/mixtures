@@ -23,7 +23,7 @@ gmm.plot_data(alpha = .5, bins = 50)
 ```
 
 <p align="center">
-  <img src="mixture4.png" width="400" height="300" title="hover text">
+  <img src="images/mixture4.png" width="400" height="300" title="hover text">
 </p>
 
 ```python
@@ -32,7 +32,7 @@ gmm.plot_results(alpha = .5, bins=50)
 ```
 
 <p align="center">
-  <img src="gmm_fitted.png" width="400" height="300" title="hover text">
+  <img src="images/gmm_fitted.png" width="400" height="300" title="hover text">
 </p>
 
 We can also generate and fit multitvariate data by simply providing multivariate parameters to the model. The ```FiniteGMM``` class will detect the shape of the inputs and set ```self.multivariate = True```. This tells the class to take different actions on the inputs and uses a collapsed gibbs sampler for fitting the model.
@@ -58,7 +58,7 @@ gmm.plot_data(alpha = .5)
 ```
 
 <p align="center">
-  <img src="m_variate_data.png" width="400" height="300" title="hover text">
+  <img src="images/m_variate_data.png" width="400" height="300" title="hover text">
 </p>
 
 ```python
@@ -66,5 +66,5 @@ gmm.gibbs(iters=20)
 gmm.plot_results(alpha = .5)
 ```
 <p align="center">
-  <img src="m_variate_fitted.png" width="400" height="300" title="hover text">
+  <img src="images/m_variate_fitted.png" width="400" height="300" title="hover text">
 </p>
