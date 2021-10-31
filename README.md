@@ -3,13 +3,15 @@
 
 ## Examples
 
+Define a mixture model and generate sample data according to the model. We can then fit a mixture model to the data and compare our fitted model to actuals.
+
 ```python
-gmm = mixtures.FiniteGMM(4, [0,4,8,16], [1,1,2,3], [.2,.2,.2,.4])
+gmm = mixtures.FiniteGMM(k = 4, mu = [0,4,8,16], sigma = [1,1,2,3], phi = [.2,.2,.2,.4])
 gmm.data_gen(1000)
-gmm.plot_data(alpha = .5)
+gmm.plot_data(alpha = .5, bins = 50)
 ```
 
-![mixture.png]
+![](mixture4.svg)
 
 ```python
 gmm.gibbs(iters=500)
